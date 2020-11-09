@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>##title##</title>
+        <style>
+          body {
+            padding: 12px;
+            display: none;
+          }
+
+          #title {
+            text-align: center;
+          }
+        </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1 id="title">##title##</h1>
+        <br/><br/>
+        <div class="input-group input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-lg">🔎</span>
+          </div>
+          <input id="search-input" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+        </div>
+        <br/><br/>
+        <div id="accordion"></div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script>
+          var collapseTemplate = '<div class="card"><div class="card-header"><h5 class="mb-0"><button class="btn btn-link" data-toggle="collapse" data-target="#collapse##index##" aria-expanded="true" aria-controls="collapse##index##">##question##</button></h5></div><div id="collapse##index##" class="collapse" aria-labelledby="headingOne" data-parent="#accordion"><div class="card-body">##answer## ##tags##</div></div></div>';
+          var questions = "##questions##";
+          var searchInput = $("#search-input");
+          var searchTerm = "";
+
+          function onSearchInputChange(e) {
+            var newSearchTerm = searchInput.val();
+            if (searchTerm != newSearchTerm) {
+              searchTerm = newSearchTerm;
+              renderQuestions();
+            }
+          }
+
+          function isSearchTermEmpty() {
+            if (!searchTerm || searchTerm.trim() == "") {
+              return true;
+            }
+            return false;
+          }
+
+          function isMatchingSearch(question) {
+            if (question.question.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
+              || question.answer.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1
+              || question.tags.toUpperCase().indexOf(searchTerm.toUpperCase()) !== -1) {
+              return true;
+            }
+            return false;
+          }
+
+          function getTags(question) {
+            if (!question.tags || question.tags == "") {
+              return "";
+            }
+            var splitTags = question.tags.split(",");
+            var resultString = "<br/><br/>";
+            splitTags.forEach(tag => {
+              resultString += '<span class="badge badge-secondary">' + tag.trim() + '</span>&nbsp;';
+            });
+
+            return resultString;
+          }
+
+          function renderQuestions() {
+            var accordion = $("#accordion");
+            accordion.html("");
+            questions.forEach((question, index) => {
+              if (isSearchTermEmpty()) {
+                accordion.append(collapseTemplate
+                  .replace("##question##", question.question)
+                  .replace("##answer##", question.answer)
+                  .replace("##tags##", getTags(question))
+                  .replaceAll("##index##", index));
+              } else if (isMatchingSearch(question)) {
+                accordion.append(collapseTemplate
+                  .replace("##question##", question.question.replaceAll(searchTerm, "<b>" + searchTerm + "</b>"))
+                  .replace("##answer##", question.answer.replaceAll(searchTerm, "<b>" + searchTerm + "</b>"))
+                  .replace("##tags##", getTags(question))
+                  .replaceAll("##index##", index));
+              }
+            });
+          }
+          
+          searchInput.on("keyup", onSearchInputChange);
+          $("body").css("display", "block");
+          renderQuestions();
+        </script>
+    </body>
+</html>
