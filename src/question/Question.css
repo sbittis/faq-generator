@@ -1,0 +1,17 @@
+.question-block {
+    margin: 24px;
+    margin-bottom: 48px;
+}
+
+.answer {
+    margin-top: 24px !important;
+}
+
+.tags {
+    margin-top: 24px !important;
+}
+
+.removeButton {
+    margin-top: 12px !important;
+    display: block !important;
+}
